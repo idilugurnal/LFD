@@ -6,24 +6,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.svm import SVC
+import sklearn.tree as tree
+import sklearn.neighbors as neighbors
 import csv
 
-
-
-
-
-if __name__ == '__main__':
-
-    train_data = pd.read_csv('train.csv')
-    test_data = pd.read_csv('test.csv')
-
-    X_train = train_data.iloc[: , 1: -1]
-    y_train = train_data.iloc[: , -1]
-    X_test = test_data.iloc[: , 1:]
-
-
-
+def randomForest(X_train , y_train, X_test):
     sc = StandardScaler()
     X_train = sc.fit_transform(X_train)
     X_test = sc.fit_transform(X_test)
@@ -41,20 +31,38 @@ if __name__ == '__main__':
 
 
 
-    regressor = RandomForestRegressor(n_estimators = 20 , random_state = 0)
-    regressor.fit(X_scaled , y_train)
-    y_pred  = regressor.predict(X_test_scaled)
+    classifier = RandomForestClassifier(n_estimators = 100)
+    classifier.fit(X_scaled , y_train)
+    y_pred  = classifier.predict(X_test_scaled)
 
-    #print(y_pred)
+    writeBack(y_pred)
+    print(y_pred)
 
-    count = 1
 
-    for i in range(len(y_pred)):
-        if(y_pred[i] < 0.5):
-            y_pred[i] = 0
-        else:
-            y_pred[i] = 1
-        count+=1
+
+
+
+def adaBoostClassifier(X_train , y_train , X_test):
+
+    sc = StandardScaler()
+    X_train = sc.fit_transform(X_train)
+    X_test = sc.fit_transform(X_test)
+
+    pca = PCA(n_components=2)
+    X_train = pca.fit_transform(X_train)
+
+    X_test = pca.fit_transform(X_test)
+
+    abc = AdaBoostClassifier(n_estimators = 100 , learning_rate = 1)
+    model = abc.fit(X_train , y_train)
+
+    y_pred = model.predict(X_test)
+    print(y_pred)
+    writeBack(y_pred)
+
+
+
+def writeBack(y_pred):
 
 
     for i in range(0 , len(y_pred)+1):
@@ -68,4 +76,22 @@ if __name__ == '__main__':
             writer = csv.writer(writeFile)
             writer.writerow(row)
 
+
+
+
+
+
+if __name__ == '__main__':
+
+    train_data = pd.read_csv('train.csv')
+    test_data = pd.read_csv('test.csv')
+
+    X_train = train_data.iloc[: , 1: -1]
+    y_train = train_data.iloc[: , -1]
+    X_test = test_data.iloc[: , 1:]
+
+    randomForest(X_train , y_train , X_test)
+
+    #Not: Hangi classifieri denersem deneyeyim pca yi 2 vererek maks a ulastim (o da 55) baska seyler denemek gerekebilir
+    #Issuelara bak
 
