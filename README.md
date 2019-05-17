@@ -1,2 +1,4 @@
 # LFD
-Our LFD Term Project with Caglar Kaya
+Our LFD Term Project
+Cagla Kaya
+Idil Ugurnal
