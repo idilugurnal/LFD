@@ -31,27 +31,6 @@ def writeBack(y_pred):
 
 
 
-def classify(X_train , y_train , X_test):
-
-    sc = StandardScaler()
-    X_train = sc.fit_transform(X_train, y_train)
-    X_test = sc.fit_transform(X_test)
-
-
-    svc = SVC(kernel = 'poly' , gamma = 1 , C = 1, degree = 4).fit(X_train , y_train)
-    y_pred = svc.predict(X_test)
-
-    count = 0
-
-    for i in y_pred:
-        if i == 1:
-            count+=1
-    print(count)
-    print(y_pred)
-
-    writeBack(y_pred)
-
-
 def feature_selection(X_train , y_train , X_test):
 
 
