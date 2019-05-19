@@ -2,6 +2,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 import sklearn.tree as tree
 from sklearn import metrics
@@ -51,6 +52,55 @@ def classify(X_train , y_train , X_test):
     writeBack(y_pred)
 
 
+def feature_selection(X_train , y_train , X_test):
+
+
+    bestfeatures = SelectKBest(score_func=chi2 , k = 6)
+
+    fit = bestfeatures.fit(X_train , y_train)
+
+    dfscores = pd.DataFrame(fit.scores_)
+    dfcolumns = pd.DataFrame(X_train.columns)
+
+    featureScores = pd.concat([dfcolumns,dfscores] , axis = 1)
+    featureScores.columns = ['Specs' , 'Score']
+
+    ###
+
+
+    selected_features = featureScores.sort_values(['Score'] , ascending=0).iloc[0:6,:]
+
+
+
+    newX_train = X_train.loc[:,selected_features['Specs']]
+
+    newX_test = X_test.loc[:,selected_features['Specs']]
+
+
+    return newX_train , newX_test
+
+
+def randomForest(X_train , y_train , X_test):
+    model = RandomForestClassifier(n_estimators=5)
+
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+
+    print(y_pred)
+
+    count = 0
+
+    for i in y_pred:
+        if i == 1:
+            count += 1
+    print(count)
+
+    writeBack(y_pred)
+
+
+
+
+
 
 
 if __name__ == '__main__':
@@ -63,4 +113,7 @@ if __name__ == '__main__':
 
     # X_train , X_test , y_train , y_test = train_test_split(X , y , test_size=0.2 , random_state=1)
 
-    classify(X_train, y_train, X_test)
+
+    X_train , X_test = feature_selection(X_train, y_train , X_test)
+
+    randomForest(X_train , y_train ,X_test)
