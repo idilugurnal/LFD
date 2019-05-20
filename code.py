@@ -12,7 +12,7 @@ from sklearn.feature_selection import SelectFromModel
 
 def randomForest(X_train , y_train, X_test):
     sc = StandardScaler()
-    X_train = sc.fit_transform(X_train)
+    X_train = sc.fit_transform(X_train, y_train)
     X_test = sc.fit_transform(X_test)
 
     sel = SelectFromModel(RandomForestClassifier(n_estimators=5))
@@ -35,6 +35,14 @@ def randomForest(X_train , y_train, X_test):
 
     writeBack(y_pred)
     print(y_pred)
+
+    count = 0
+
+    for i in y_pred:
+        if i == 1:
+            count +=1
+
+    print(count)
 
 
 
