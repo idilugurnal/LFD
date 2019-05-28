@@ -2,7 +2,7 @@ import numpy as np
 
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from sklearn import metrics
+from sklearn.ensemble import BaggingClassifier
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -15,7 +15,7 @@ def randomForest(X_train , y_train, X_test):
     X_train = sc.fit_transform(X_train, y_train)
     X_test = sc.fit_transform(X_test)
 
-    sel = SelectFromModel(RandomForestClassifier(n_estimators=5))
+    sel = SelectFromModel(RandomForestClassifier(n_estimators=5 ))
     sel.fit(X_train, y_train)
 
 
@@ -67,6 +67,37 @@ def adaBoostClassifier(X_train , y_train , X_test):
     writeBack(y_pred)
 
 
+def bagging(X_train , y_train , X_test):
+
+    sc = StandardScaler()
+    X_train = sc.fit_transform(X_train)
+    X_test = sc.fit_transform(X_test)
+
+    sel = SelectFromModel(RandomForestClassifier(n_estimators=40))
+    sel.fit(X_train, y_train)
+
+    selected_features = X_train[:, (sel.get_support())]
+
+
+    abc = BaggingClassifier(n_estimators = 100)
+    model = abc.fit(selected_features , y_train)
+
+    selected_features = X_test[:, (sel.get_support())]
+
+    y_pred = model.predict(selected_features)
+    writeBack(y_pred)
+
+    print(y_pred)
+
+    count = 0
+
+    for i in y_pred:
+        if i == 1:
+            count += 1
+
+    print(count)
+
+
 
 def writeBack(y_pred):
 
@@ -98,5 +129,5 @@ if __name__ == '__main__':
     #X_train , X_test , y_train , y_test = train_test_split(X , y , test_size=0.2 , random_state=1)
 
 
-    randomForest(X_train , y_train , X_test ) #Bu haliyle %60 aldi
+    bagging(X_train , y_train , X_test ) #Bu haliyle %60 aldi
 

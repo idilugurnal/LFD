@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble import AdaBoostClassifier
 import csv
 from sklearn.feature_selection import SelectKBest, chi2, f_regression
@@ -101,7 +102,9 @@ def plot_decision_regions(X, y):
     plt.show()
 
 def randomForest(X_train , y_train , X_test):
-    model = SVC(kernel = 'rbf' , C = 100 , gamma = 0.1)
+    model = BaggingClassifier(n_estimators=100, random_state=3)
+
+    # 3 ile %60 aldik
 
 
     model.fit(X_train , y_train)
