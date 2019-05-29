@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 def writeBack(y_pred):
 
     #Function to write back
-    
+
     for i in range(0, len(y_pred) + 1):
         if i == 0:
             with open('output.csv', 'w') as writeFile:
@@ -28,9 +28,9 @@ def writeBack(y_pred):
 
 
 
-def feature_selection(X_train , y_train , X_test):
+def preprocessing(X_train , y_train , X_test):
 
-    
+    #Feature selection is done here
 
 
     bestfeatures = SelectKBest(score_func=chi2 , k = 50)
@@ -84,16 +84,38 @@ def plot_decision_regions(X, y):
 
     plt.show()
 
-def adaBoostClassifier(X_train , y_train , X_test):
+def trainModel(X_train , y_train , X_test):
+
+    #training
 
     model = AdaBoostClassifier(n_estimators=10 )
 
 
     model.fit(X_train , y_train)
 
+    return model
+
+def predict(model):
+
+    #prediction
     y_pred = model.predict(X_test)
 
-    writeBack(y_pred)
+    return y_pred
+
+
+
+def loadData():
+    # Read train and test data
+    train_data = pd.read_csv('train.csv')
+    test_data = pd.read_csv('test.csv')
+
+    # Take useful parts
+    X_train = train_data.iloc[:, 0: -1]
+    y_train = train_data.iloc[:, -1]
+    X_test = test_data.iloc[:, 0:]
+
+
+    return X_train , y_train , X_test
 
 
 
@@ -103,19 +125,15 @@ def adaBoostClassifier(X_train , y_train , X_test):
 
 if __name__ == '__main__':
 
-    #Read train and test data
-    train_data = pd.read_csv('train.csv')
-    test_data = pd.read_csv('test.csv')
 
-    #Take useful parts
-    X_train = train_data.iloc[:, 0: -1]
-    y_train = train_data.iloc[:, -1]
-    X_test = test_data.iloc[:, 0:]
+    X_train , y_train , X_test = loadData()
 
 
     #Do feature selection on data
-    X_train , X_test = feature_selection(X_train, y_train , X_test)
+    X_train , X_test = preprocessing(X_train, y_train , X_test)
 
 
     #Classify test set
-    adaBoostClassifier(X_train , y_train ,X_test)
+    model = trainModel(X_train , y_train ,X_test)
+    y_pred = predict(model)
+    writeBack(y_pred)
