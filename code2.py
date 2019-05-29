@@ -5,21 +5,16 @@ from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble import AdaBoostClassifier
 import csv
 from sklearn.feature_selection import SelectKBest, chi2, f_regression
-from sklearn.decomposition import PCA
-from matplotlib.colors import ListedColormap
-from sklearn.feature_selection import RFE
-from sklearn.svm import SVC, LinearSVC
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.pipeline import Pipeline
 
-from sklearn.feature_selection import SelectFromModel
-from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.preprocessing import StandardScaler
 
 
 
 
 def writeBack(y_pred):
+
+    #Function to write back
+    
     for i in range(0, len(y_pred) + 1):
         if i == 0:
             with open('output.csv', 'w') as writeFile:
@@ -48,13 +43,12 @@ def feature_selection(X_train , y_train , X_test):
     featureScores = pd.concat([dfcolumns,dfscores] , axis = 1)
     featureScores.columns = ['Specs' , 'Score']
 
-    ###
 
 
     selected_features = featureScores.sort_values(['Score'] , ascending=0).iloc[0:50,:]
 
 
-    #5 , 6 , 11 , 7 , 9,
+    #5 , 6 , 11 , 7 , 9 are deducted
 
 
     newX_train = X_train.loc[:,selected_features['Specs']]
@@ -72,22 +66,11 @@ def feature_selection(X_train , y_train , X_test):
     newX_test = sc.fit_transform(newX_test)
 
 
-
-    #pca = PCA(n_components=8)
-
-    #newX_train = pca.fit_transform(newX_train , y_train)
-    #newX_test = pca.fit_transform(newX_test)
-
-    print(newX_train)
-
-
-
-    #draw_x = newX_train.drop(['X243', 'X66', 'X38', 'X474', 'X450', 'X503'], axis=1)
-
-    #plot_decision_regions(draw_x , y_train)
     return newX_train , newX_test
 
 def plot_decision_regions(X, y):
+
+    #This is for plotting decision regions
 
     print(X)
 
@@ -101,26 +84,14 @@ def plot_decision_regions(X, y):
 
     plt.show()
 
-def randomForest(X_train , y_train , X_test):
-    model = BaggingClassifier(n_estimators=100, random_state=3)
+def adaBoostClassifier(X_train , y_train , X_test):
 
-    # 3 ile %60 aldik
+    model = AdaBoostClassifier(n_estimators=10 )
 
 
     model.fit(X_train , y_train)
 
     y_pred = model.predict(X_test)
-
-
-
-    print(y_pred)
-
-    count = 0
-
-    for i in y_pred:
-        if i == 1:
-            count += 1
-    print(count)
 
     writeBack(y_pred)
 
@@ -131,16 +102,20 @@ def randomForest(X_train , y_train , X_test):
 
 
 if __name__ == '__main__':
+
+    #Read train and test data
     train_data = pd.read_csv('train.csv')
     test_data = pd.read_csv('test.csv')
 
+    #Take useful parts
     X_train = train_data.iloc[:, 0: -1]
     y_train = train_data.iloc[:, -1]
     X_test = test_data.iloc[:, 0:]
 
-    # X_train , X_test , y_train , y_test = train_test_split(X , y , test_size=0.2 , random_state=1)
 
-
+    #Do feature selection on data
     X_train , X_test = feature_selection(X_train, y_train , X_test)
 
-    randomForest(X_train , y_train ,X_test)
+
+    #Classify test set
+    adaBoostClassifier(X_train , y_train ,X_test)
