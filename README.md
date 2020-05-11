@@ -1,5 +1,5 @@
 # LFD
-Our LFD Term Project
+Our Learning from Data Term Project
 Cagla Kaya
 Idil Ugurnal
 
